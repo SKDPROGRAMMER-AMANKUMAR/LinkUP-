@@ -15,16 +15,19 @@ export const AuthProvider = ({ children }) => {
         getUserOnLoad();
     },[])
 
-    const getUserOnLoad = async() => {
+    const getUserOnLoad = async () => {
         try {
-            const accountDetails = await account.get()
-            console.log('accountDetails:',accountDetails);
+            const accountDetails = await account.get();
+            console.log('accountDetails:', accountDetails);
             setUser(accountDetails);
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching user details:", error.message);
+            // Redirect user to login or show a message
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);   
-    }
+    };
+    
 
     const navigate = useNavigate()
 
@@ -33,6 +36,8 @@ export const AuthProvider = ({ children }) => {
 
         try {
            const response = await account.createEmailPasswordSession(credentials.email,credentials.password)
+
+           console.log('Session created:', response);
 
            const accountDetails = await account.get();
 
@@ -88,7 +93,7 @@ export const AuthProvider = ({ children }) => {
     }
 
    return <AuthContext.Provider value={contextData}>
-   {loading ? <p class="flex items-center justify-center h-screen text-xl font-semibold">
+   {loading ? <p className="flex items-center justify-center h-screen text-xl font-semibold">
     <PulseLoader color="#00dcff" />
 </p>
  : children}
